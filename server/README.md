@@ -1,73 +1,231 @@
-# FastAPI + PostgreSQL starter
+# Lesson Planner API
 
-Async SQLAlchemy 2.0 + asyncpg + Alembic, wired into a FastAPI app.
+FastAPI and SQLAlchemy backend for the lesson planner: token authentication, role-based authorization, and the school data model (subjects, classes, enrolments, lessons).
+
+## Stack
+
+- FastAPI
+- SQLAlchemy 2.x (typed `Mapped` models)
+- PyJWT for access tokens, with hashed, rotating refresh tokens stored in the database
+- pwdlib with Argon2 for password hashing
+- pydantic-settings for configuration
+- PostgreSQL in production, SQLite for quick local development
+- Alembic for migrations (recommended once you leave prototyping)
+
+## Project structure
+
+```
+server/
+  .env
+  app/
+    main.py                 App setup and router registration
+    db.py                   Engine, session, Base, get_db
+    models.py               All SQLAlchemy models
+    schemas.py              Pydantic request/response models
+    deps.py                 get_current_user, get_active_user, require_roles
+    core/
+      config.py             Settings loaded from .env
+      security.py           Password hashing, JWT and refresh token helpers
+    services/
+      users.py              Login ID and password generation, teacher/student creation
+      email.py              SMTP sending, credentials email
+      access.py             Data scoping: who can see which lessons and classes
+    routers/
+      auth.py               Login, refresh, logout, change password, me
+      admin.py              Create teacher accounts
+      academics.py          Subjects, classes, teaching assignments (admin)
+      teachers.py           Create student accounts
+      classes.py            Class list, rosters, enrol and withdraw
+      lessons.py            Lesson CRUD
+    scripts/
+      create_admin.py       One-off admin bootstrap
+```
 
 ## Setup
 
-Dependencies are declared in `pyproject.toml`; `uv` resolves them into a
-`uv.lock` and manages the `.venv` for you — no manual venv activation needed,
-`uv run` picks it up automatically.
-
-1. Install dependencies:
-
-   ```bash
-   uv sync
-   ```
-
-2. Copy `.env.example` to `.env` and point it at your Postgres instance:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-3. Create the database if it doesn't exist yet:
-
-   ```bash
-   createdb mydb
-   ```
-
-4. Run the first migration (the `items` table is already modeled in
-   `app/models/item.py`):
-
-   ```bash
-   uv run alembic revision --autogenerate -m "create items table"
-   uv run alembic upgrade head
-   ```
-
-5. Run the app:
-
-   ```bash
-   uv run uvicorn app.main:app --reload
-   ```
-
-   Visit `http://localhost:8000/docs` for interactive API docs, or
-   `http://localhost:8000/health` for a basic liveness check.
-
-## Adding a new resource
-
-Follow the `item` slice as the template:
-
-1. `app/models/<name>.py` — SQLAlchemy model, and import it in `app/db/base.py`
-2. `app/schemas/<name>.py` — Pydantic request/response schemas
-3. `app/crud/<name>.py` — query functions, one per operation
-4. `app/api/v1/endpoints/<name>.py` — route handlers, thin — just calling crud
-5. Register the router in `app/api/v1/api.py`
-6. `uv run alembic revision --autogenerate -m "add <name> table"` then `uv run alembic upgrade head`
-
-## Adding a dependency
+You need Python 3.12 or newer and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-uv add <package>          # runtime dependency, added to pyproject.toml
-uv add --dev pytest       # dev-only dependency
+cd server
+uv venv
+uv pip install "fastapi[standard]" sqlalchemy alembic pyjwt "pwdlib[argon2]" pydantic-settings "pydantic[email]" python-multipart "psycopg[binary]"
 ```
 
-## Why these choices
+Install `pyjwt`, not `jwt`. The `jwt` package is an unrelated, abandoned library that fails to import on modern Python. If you ever installed it, run `uv pip uninstall jwt pyjwt` and then `uv pip install pyjwt`.
 
-- **Async everywhere** (`asyncpg`, async SQLAlchemy session, async routes) —
-  matches FastAPI's async request handling instead of blocking the event loop
-  on DB calls.
-- **CRUD layer separate from routes** — keeps route handlers thin and query
-  logic reusable/testable outside of HTTP.
-- **`app/db/base.py` imports every model** — so Alembic's autogenerate and
-  `Base.metadata` can see the full schema even though each model lives in
-  its own file.
+### Configuration
+
+Create `server/.env`. Every variable is required. This example is for local development:
+
+```env
+DATABASE_URL=sqlite:///./lessonplanner.db
+JWT_SECRET=paste-a-generated-secret-here
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_USER=dev
+SMTP_PASSWORD=dev
+MAIL_FROM=no-reply@lessonplanner.test
+APP_LOGIN_URL=http://teachers.localhost:3000/login
+```
+
+Generate the secret with:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(64))"
+```
+
+For PostgreSQL use `DATABASE_URL=postgresql+psycopg://user:pass@localhost:5432/lessonplanner`.
+
+`.env` rules: one `KEY=value` per line, no spaces around `=`, no markdown fences, and quotes around any value containing spaces or `#`.
+
+Optional settings with defaults: `JWT_ALGORITHM` (`HS256`), `ACCESS_TOKEN_MINUTES` (`15`), `REFRESH_TOKEN_DAYS` (`7`).
+
+### Local email
+
+Credentials are delivered by email, so in development run a mail sink that prints messages to the terminal:
+
+```bash
+uv add aiosmtpd
+uv run python -m aiosmtpd -n -l localhost:1025
+```
+
+The temporary passwords for new teachers and students appear in that terminal. If sending fails, the error is logged by the API and the request still succeeds.
+
+### Create the first admin
+
+Admins can't be created through the API. Run this once, from `server/`:
+
+```bash
+uv run python -m app.scripts.create_admin
+```
+
+It prints the admin's login ID (`ADM-XXXX-XXXX`). Sign in with that ID and the password you chose.
+
+### Run
+
+```bash
+uv run fastapi dev app/main.py
+```
+
+- API: `http://127.0.0.1:8000`
+- Interactive docs: `http://127.0.0.1:8000/docs` (use **Authorize** with the login ID as the username)
+
+Tables are created on startup with `create_all`. That doesn't alter existing tables, so after a model change in development either delete the SQLite file and recreate the admin, or use Alembic.
+
+## Authentication
+
+- **Login:** `POST /auth/login` takes form data (`username` is the login ID, `password`), not JSON. Login IDs are uppercased and trimmed.
+- **Access token:** JWT valid for 15 minutes. It carries only the user ID. The role and active status are read from the database on every request, so deactivating a user or changing a role takes effect immediately.
+- **Refresh token:** random, valid for 7 days, stored only as a SHA-256 hash. Each refresh token is single-use and rotates on `/auth/refresh`. If a used token is replayed, all of that user's sessions are revoked.
+- **First login:** accounts start with `must_change_password = true`. Until `/auth/change-password` succeeds, every protected route returns 403 `Password change required`. Changing the password returns fresh tokens and signs out all other sessions.
+- **Timing:** login always performs a hash verification, so response time doesn't reveal whether a login ID exists.
+
+### Login IDs and temporary passwords
+
+IDs look like `TCH-AB12-CD34`, `STU-AB12-CD34` and `ADM-AB12-CD34`: a role prefix and eight random characters from an alphabet without `0`, `O`, `1` and `I`, generated with `secrets`. Treat the ID as an identifier, not a secret. The password and rate limiting provide the security. The prefix is only a convenience: code always uses `users.role`, never the prefix.
+
+## Data model
+
+```
+users ──┬── teachers   (1:1, employee_number, department, ...)
+        ├── students   (1:1, admission_number, guardian contact, ...)
+        └── refresh_tokens
+
+subjects ──┐
+           ├── class_subjects (teacher_id) ── lessons
+classes ───┤
+           └── enrollments ── students
+```
+
+| Table | Notes |
+|---|---|
+| `users` | Credentials for every role. `login_id` is unique. `email` is nullable (young students). `created_by_id` records who created the account. |
+| `teachers`, `students` | Role-specific profile data. Guardian email is not unique, since siblings share a guardian. |
+| `refresh_tokens` | Hashed tokens with expiry and revocation time. |
+| `subjects` | Unique code and name. |
+| `classes` | A cohort for one academic year. Unique on name plus year. |
+| `class_subjects` | A teaching assignment: this teacher teaches this subject to this class. One teacher per subject per class. |
+| `enrollments` | Student in a class. Withdrawal sets `withdrawn_at` so history is kept. |
+| `lessons` | Belongs to a `class_subject`. Has a date, start time, duration and a `draft` or `published` status. |
+
+Teachers with assignments can't be hard-deleted. Deactivate them with `is_active = false`.
+
+## API overview
+
+All routes except login, refresh and logout need `Authorization: Bearer <access token>`.
+
+### Auth
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/auth/login` | Form data. Returns tokens and `must_change_password`. |
+| POST | `/auth/refresh` | `{ "refresh_token": "..." }`. Rotates the token. |
+| POST | `/auth/logout` | Revokes the given refresh token. |
+| POST | `/auth/change-password` | Works while locked. Returns new tokens. |
+| GET | `/auth/me` | Current user. |
+
+### Admin
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/admin/teachers` | Creates the account and emails the credentials. |
+| POST, GET | `/admin/subjects` | |
+| POST | `/admin/classes` | |
+| POST, GET | `/admin/classes/{class_id}/assignments` | Assign a teacher by `teacher_login_id`. |
+
+### Teachers and classes
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/teachers/students` | Teacher or admin. Credentials go to the guardian. |
+| GET | `/classes` | Scoped by role. |
+| GET | `/classes/{class_id}/students` | Roster. Admin or a teacher of the class. |
+| POST | `/classes/{class_id}/students` | `{ "student_login_id": "STU-..." }` |
+| DELETE | `/classes/{class_id}/students/{student_login_id}` | Withdraws the student. |
+
+### Lessons
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/lessons` | Filters: `class_subject_id`, `date_from`, `date_to`, `limit`, `offset`. |
+| GET | `/lessons/{id}` | |
+| POST | `/lessons` | Teachers only for their own assignments. |
+| PATCH | `/lessons/{id}` | Can't move a lesson to another assignment. |
+| DELETE | `/lessons/{id}` | |
+
+## Authorization and data scoping
+
+Role checks say who may call an endpoint. Scoping says which rows they may touch. Both are enforced here:
+
+- `require_roles(...)` in `app/deps.py` guards endpoints by role, and also blocks users who haven't changed their temporary password.
+- `app/services/access.py` builds every lesson and class query by role. Admins see everything, teachers see their own assignments, and students see published lessons of classes they are enrolled in.
+- Out-of-scope records return **404**, not 403, so callers can't probe which IDs exist.
+
+When you add a new resource, add its scoping to `access.py` instead of filtering in the router.
+
+## Typical flow
+
+1. Admin: create a subject and a class, then create a teacher.
+2. Admin: assign the teacher to the class and subject.
+3. Teacher: sign in with the emailed credentials and change the password.
+4. Teacher: create a student, then enrol the student in the class.
+5. Teacher: create a lesson (draft), then publish it with `PATCH { "status": "published" }`.
+6. Student: sign in via the guardian's email, change the password, and call `GET /lessons`.
+
+## Troubleshooting
+
+| Symptom | Cause and fix |
+|---|---|
+| `ModuleNotFoundError: No module named 'jwt'` | PyJWT isn't installed in the active environment. `uv pip install pyjwt`. |
+| `cannot import name 'Mapping' from 'collections'` | The wrong `jwt` package is installed. Uninstall `jwt` and `pyjwt`, then install `pyjwt`. |
+| `python-dotenv could not parse statement starting at line N` | Bad `.env` line: a pasted markdown fence, a placeholder left in, or an unquoted value with spaces or `#`. |
+| `ValidationError` from `Settings()` | A required variable is missing from `.env`. The error names it. |
+| 422 on `/auth/login` | Send form data, not JSON. |
+| 403 `Password change required` | Call `/auth/change-password` first. |
+| `AttributeError: 'NoneType' object has no attribute 'id'` in a router | `require_roles` must return the user from its inner `checker` function. |
+| New column missing after a model change | `create_all` doesn't alter existing tables. Recreate the dev database or add a migration. |
+
+## Before production
+
+- Rate limit `/auth/login` (for example with slowapi or at the reverse proxy) and lock out repeated failures per login ID.
+- Switch to PostgreSQL and Alembic migrations.
+- Move email sending to a queue with retries (ARQ or Celery). FastAPI background tasks lose work on a crash.
+- Add admin endpoints to resend credentials and reset passwords, and optionally expire unused temporary passwords.
+- Add CORS only if browsers call the API directly. Use explicit portal origins, not `*`, if you enable credentials.
+- Add automated tests for the access rules, especially the 404 cases (a teacher reading another teacher's lesson, a student reading a draft).
