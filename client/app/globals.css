@@ -1,26 +1,58 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #e8eef9;
+  --bg-glow: #a9c8ff;
+  --panel: rgb(255 255 255 / 0.55);
+  --cell: rgb(255 255 255 / 0.65);
+  --line: rgb(15 23 42 / 0.1);
+  --fg: #0f172a;
+  --muted: #64748b;
+  --accent: #2b8cff;
+  --accent-soft: rgb(43 140 255 / 0.14);
+  --shadow: 0 10px 40px rgb(30 64 120 / 0.14);
 }
 
+.dark {
+  --bg: #090c12;
+  --bg-glow: #0d4a9c;
+  --panel: rgb(30 38 52 / 0.55);
+  --cell: rgb(255 255 255 / 0.05);
+  --line: rgb(255 255 255 / 0.09);
+  --fg: #f1f5f9;
+  --muted: #8b97ab;
+  --accent: #2b8cff;
+  --accent-soft: rgb(43 140 255 / 0.22);
+  --shadow: 0 10px 40px rgb(0 0 0 / 0.45);
+}
+
+/* Tailwind utilities backed by the variables: bg-panel, border-line, text-muted, ... */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-cell: var(--cell);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility glass {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
 body {
-  background: var(--foreground);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  color: var(--fg);
+  background-color: var(--bg);
+  background-image:
+          radial-gradient(1100px 520px at 90% 105%, var(--bg-glow), transparent 70%),
+          radial-gradient(800px 420px at 0% -10%, var(--accent-soft), transparent 70%);
+  background-attachment: fixed;
 }
