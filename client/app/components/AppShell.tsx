@@ -1,18 +1,19 @@
 "use client";
 
-import {Bell, CallendarDays, LayoutGrid, Search} from "lucide-react";
+import {Bell, CalendarDays, LayoutGrid, Search} from "lucide-react";
 import type {LucideIcon} from "lucide-react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 
 import {ThemeToggle} from "@/app/components/ThemeToggle";
+import { LogoutButton } from "@/app/components/LogoutButton";
 
 export type Portal = "admin" | "teachers" | "students";
 
 type NavItem = {
     href: string;
     label: string;
-    icon?: LucideIcon;
+    icon: LucideIcon;
 }
 
 //add types here as you build the pages
@@ -24,13 +25,13 @@ const NAV: Record<Portal, NavItem[]> = {
     }],
     teachers: [{
         href: "/",
-        label: "Calender",
-        icon: LayoutGrid
+        label: "Calendar",
+        icon: CalendarDays
     }],
     students: [{
         href: "/",
         label: "Timetable",
-        icon: LayoutGrid
+        icon: CalendarDays
     }],
 }
 
@@ -43,12 +44,15 @@ export function AppShell({
     name: string;
     children: React.ReactNode;
 }) {
+    const currentPath = usePathname();
+    if (currentPath === "/change-password") return <>{children}</>;
+
     // The path may or may not include the portal folder depending on rewrite handling
-    const pathname = usePathname().replace(new RegExp(`^/${portal}`), "") || "/";
+    const pathname = currentPath.replace(new RegExp(`^/${portal}`), "") || "/";
 
     return (
         <div className="mx-auto min-h-screen max-w-360 p-3 sm:p-6 lg:p-8">
-            <div className="glass flex min-h-[calc(100vh-4rem)] flex-col gap-6 rounded-4xl p-5 lg:p-8">
+            <div className="glass app-shell flex min-h-[calc(100vh-4rem)] flex-col gap-6 rounded-4xl p-5 lg:p-8">
                 <header className="flex items-center gap-4 lg:gap-6">
                     <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-lg font-bold text-white">
                         L
@@ -65,17 +69,12 @@ export function AppShell({
                         />
                     </label>
                     <ThemeToggle />
-                    <button
-                        type="button"
-                        aria-label="Notifications"
-                        className="grid size-10 place-items-center rounded-full border border-line bg-cell transition hover:bg-accent-soft"
-                    >
-                        <Bell className="size-4" />
-                    </button>
+                    <button type="button" aria-label="Notifications" className="grid size-10 place-items-center rounded-full border border-line bg-cell transition hover:bg-accent-soft"><Bell className="size-4" /></button>
+                    <LogoutButton />
                 </header>
 
                 <div className="flex flex-1 gap-4 lg:gap-6">
-                    <nav className="flex flex-col gap-3 self-start rounded-full border border-line bg-cell p-2">
+                    <nav aria-label={`${portal} navigation`} className="portal-nav flex flex-col gap-3 self-start rounded-full border border-line bg-cell p-2">
                         {NAV[portal].map(({ href, label, icon: Icon }) => {
                             const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
                             return (
@@ -89,6 +88,7 @@ export function AppShell({
                                     }`}
                                 >
                                     <Icon className="size-4" />
+                                    <span className="nav-label">{label}</span>
                                 </Link>
                             );
                         })}

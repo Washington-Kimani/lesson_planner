@@ -2,6 +2,11 @@ import { Planner } from "@/app/components/Planner";
 import { monthKey, todayISO } from "@/lib/dates";
 import { getLessonsForMonth } from "@/lib/lessons";
 
+export const metadata = {
+    title: "Teacher calendar · Lesson Planner",
+    description: "Sign in to plan and manage your lessons.",
+};
+
 export default async function TeacherHome({
                                               searchParams,
                                           }: {

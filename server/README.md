@@ -66,7 +66,7 @@ SMTP_PORT=1025
 SMTP_USER=dev
 SMTP_PASSWORD=dev
 MAIL_FROM=no-reply@lessonplanner.test
-APP_LOGIN_URL=http://teachers.localhost:3000/login
+APP_LOGIN_URL=http://localhost:3000/login
 ```
 
 Generate the secret with:
@@ -83,7 +83,7 @@ Optional settings with defaults: `JWT_ALGORITHM` (`HS256`), `ACCESS_TOKEN_MINUTE
 
 ### Local email
 
-Credentials are delivered by email, so in development run a mail sink that prints messages to the terminal:
+Credentials are delivered by email, so in development run a mail sink that prints messages to the terminal. `APP_LOGIN_URL` is the bare-domain sign-in URL; the email service selects the appropriate portal subdomain from the account role.
 
 ```bash
 uv add aiosmtpd

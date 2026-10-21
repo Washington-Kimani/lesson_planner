@@ -94,13 +94,13 @@ def refresh(
     if token is None:
         raise invalid
 
-    if token.revoked_at is None:
+    if token.revoked_at is not None:
         # a used token was replayed: assume theft and terminate every session
         _revoke_all(db, token.user_id)
         db.commit()
         raise invalid
 
-    user = db.get(user, token.user_id)
+    user = db.get(User, token.user_id)
     if as_utc(token.expires_at) < utc_now() or user is None or not user.is_active:
         raise invalid
 
