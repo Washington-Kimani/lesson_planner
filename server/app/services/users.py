@@ -82,9 +82,9 @@ def create_student(
 ) -> tuple[User, str]:
     temp_password = generate_temp_password()
     user = User(
-        logn_id=unique_login_id(db, UserRole.STUDENT),
+        login_id=unique_login_id(db, UserRole.STUDENT),
         first_name=data.first_name,
-        last_name=data.first_name,
+        last_name=data.last_name,
         email=data.email,
         role=UserRole.STUDENT,
         password_hash=hash_password(temp_password),

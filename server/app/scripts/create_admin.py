@@ -1,13 +1,12 @@
 import getpass
 
 from app.core.security import hash_password
-from app.db.core import Base, SessionLocal, engine
+from app.db.core import SessionLocal
 from app.db.models import User, UserRole
 from app.services.users import unique_login_id
 
 
 def main() -> None:
-    Base.metadata.create_all(bind=engine)
     first = input("First name: ").strip()
     last = input("Last name: ").strip()
     email = input("Email: ").strip()
