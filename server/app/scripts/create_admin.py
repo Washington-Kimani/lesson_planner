@@ -11,7 +11,7 @@ def main() -> None:
     first = input("First name: ").strip()
     last = input("Last name: ").strip()
     email = input("Email: ").strip()
-    password = getpass.getpass("Password (min 10 chars): ")
+    password = getpass.getpass("Password (min 8 chars): ")
     assert len(password) >= 8, "Password too short"
 
     with SessionLocal() as db:

@@ -1,26 +1,66 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f7f7f9;
+  --panel: rgb(255 255 255 / 0.92);
+  --cell: #f7f7f9;
+  --line: #ececf1;
+  --fg: #13111c;
+  --muted: #6c6d90;
+  --accent: #7000ff;
+  --accent-soft: #f3e8ff;
+  --brand: #eabe00;
+  --success: #1e8a34;
+  --glow-a: rgb(112 0 255 / 0.06);
+  --glow-b: transparent;
+  --shadow: 0 1px 2px rgb(19 17 28 / 0.04), 0 10px 30px rgb(112 0 255 / 0.07);
 }
 
+.dark {
+  --bg: #0c0916;
+  --panel: rgb(26 20 44 / 0.72);
+  --cell: rgb(255 255 255 / 0.05);
+  --line: rgb(255 255 255 / 0.09);
+  --fg: #f4f1fb;
+  --muted: #9a96b4;
+  --accent: #8b3dff;
+  --accent-soft: rgb(139 61 255 / 0.2);
+  --brand: #eabe00;
+  --success: #5fd37a;
+  --glow-a: rgb(112 0 255 / 0.35);
+  --glow-b: rgb(112 0 255 / 0.12);
+  --shadow: 0 10px 40px rgb(0 0 0 / 0.45);
+}
+
+/* Tailwind utilities backed by the variables: bg-panel, border-line, text-muted, ... */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-cell: var(--cell);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-brand: var(--brand);
+  --color-success: var(--success);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility glass {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
 body {
-  background: var(--foreground);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  color: var(--fg);
+  background-color: var(--bg);
+  background-image:
+          radial-gradient(1100px 520px at 90% 110%, var(--glow-a), transparent 70%),
+          radial-gradient(800px 420px at 0% -10%, var(--glow-b), transparent 70%);
+  background-attachment: fixed;
 }
