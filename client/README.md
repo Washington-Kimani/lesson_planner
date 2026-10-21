@@ -1,133 +1,86 @@
 # Lesson Planner Web
 
-Next.js frontend for the lesson planner. One app serves three portals, one per role, each on its own subdomain, with a glass-style UI that supports light and dark mode.
+Next.js frontend for the lesson planner. The bare domain hosts public school information, and role-specific subdomains provide teacher, student and administrator portals.
 
-| Portal | Dev URL | Purpose |
-|---|---|---|
-| Admin | `http://admin.localhost:3000` | Set up subjects, classes, teachers and assignments |
-| Teachers | `http://teachers.localhost:3000` | Plan lessons, manage students and enrolment |
-| Students | `http://students.localhost:3000` | View published lessons |
+| Host | Purpose |
+|---|---|
+| `http://localhost:3000` | Home, accounts, help, contact and privacy pages |
+| `http://teachers.localhost:3000` | Teacher sign-in and lesson calendar |
+| `http://students.localhost:3000` | Student sign-in and published timetable |
+| `http://admin.localhost:3000` | Administrator sign-in and school overview |
 
 ## Stack
 
-- Next.js 16 (App Router) and React
+- Next.js 16 App Router and React
 - TypeScript
 - Tailwind CSS v4
 - `next-themes` for light and dark mode
 - `lucide-react` for icons
-
-## Project structure
-
-```
-web/
-  proxy.ts                          Subdomain -> portal rewrite
-  next.config.ts                    allowedDevOrigins for the portal hosts
-  .env.local                        ROOT_DOMAIN
-  app/
-    layout.tsx                      Font, ThemeProvider
-    globals.css                     Theme tokens, glass utility
-    page.tsx                        Bare-domain landing page
-    teachers/(portal)/layout.tsx    App shell for the teachers portal
-    teachers/(portal)/page.tsx      Calendar
-    students/(portal)/...           Same shape, read-only
-    admin/(portal)/...              Same shell, admin screens
-  components/
-    app-shell.tsx                   Header, side nav, theme toggle
-    theme-toggle.tsx
-    planner.tsx                     Month calendar and schedule panel
-  lib/
-    types.ts                        Lesson type, mirrors the API schema
-    dates.ts                        Month grid, formatting, subject colours
-    lessons.ts                      Data access (mock for now)
-```
 
 ## Getting started
 
 You need Node.js 20.9 or newer.
 
 ```bash
-cd web
+cd client
 npm install
-echo "ROOT_DOMAIN=localhost" > .env.local
+cat > .env.local <<'EOF'
+ROOT_DOMAIN=localhost
+NEXT_PUBLIC_ROOT_DOMAIN=localhost
+API_BASE_URL=http://127.0.0.1:8000
+EOF
 npm run dev
 ```
 
-Open one of the portal URLs above. The plain `http://localhost:3000` shows a small landing page, and direct visits to `/admin`, `/teachers` or `/students` on a non-portal host return 404.
+Run the FastAPI service separately (see [the server README](../server/README.md)). If a browser doesn't resolve `*.localhost`, add this line to `/etc/hosts`:
 
-If a browser doesn't resolve `*.localhost`, add this line to `/etc/hosts`:
-
-```
+```text
 127.0.0.1 admin.localhost teachers.localhost students.localhost
 ```
 
-### Environment
+## Environment
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ROOT_DOMAIN` | `localhost` | Domain the portal subdomains hang off. Use your real domain in production, for example `yourschool.app`. |
+| `ROOT_DOMAIN` | `localhost` | Root host used by `proxy.ts` to identify role subdomains. Set to your production domain. |
+| `NEXT_PUBLIC_ROOT_DOMAIN` | `localhost` | Root domain used to build links from sign-in screens to the public site and other portals. Set to the same domain as `ROOT_DOMAIN`. |
+| `API_BASE_URL` | `http://127.0.0.1:8000` | Internal URL for the FastAPI service. |
 
-## How subdomain routing works
+For production, point wildcard DNS (`*.yourschool.app`) at the app, serve over HTTPS, and set both domain variables to `yourschool.app`. Portal links use HTTPS outside local development.
 
-`proxy.ts` (called `middleware.ts` before Next.js 16) reads the `Host` header and rewrites the request to the matching folder. The browser URL doesn't change.
+## Routing and sessions
 
-```
-teachers.localhost:3000/        ->  app/teachers/(portal)/page.tsx
-teachers.localhost:3000/foo     ->  app/teachers/(portal)/foo/page.tsx
-```
+`proxy.ts` rewrites each role subdomain into its matching App Router folder. Portal paths are hidden on the bare domain, so `/admin`, `/teachers` and `/students` there return 404.
 
-- Navigation links inside a portal use plain paths such as `/` or `/classes`.
-- The `(portal)` route group keeps the app shell off pages that shouldn't have it, such as `/login`. The group name isn't part of the URL.
-- Cookies and `localStorage` are scoped to each host, so a session in one portal isn't visible to the others. The theme choice is also stored per portal.
-- The proxy only separates portals. The API enforces roles.
+- The bare domain has public routes: `/`, `/accounts`, `/help`, `/contact` and `/privacy`.
+- Each portal has a `/login` page outside its authenticated app shell.
+- An authenticated portal is checked against `/auth/me` on each page request. A user visiting the wrong role host is sent to their correct portal.
+- Login and password changes call the FastAPI service through Next route handlers. Access and refresh tokens live in host-only, `httpOnly`, `SameSite=Lax` cookies; the access cookie is `Secure` in production. Tokens are never stored in local storage or exposed to client JavaScript.
+- When an access token expires, the proxy rotates the refresh token through `/auth/refresh` and updates both cookies. The server stores only a hash of the refresh token.
+- First sign-in requires a new password of at least 10 characters. Protected portal requests are redirected to `/change-password` until that succeeds.
+- Sign out revokes the refresh token and clears the browser cookies.
+- Role checks are a user-experience boundary, not the security boundary: FastAPI validates the current account and permissions on protected API operations.
 
-### Production
+Cookies are host-only. A teacher session on `teachers.yourschool.app` is not shared with the student or administrator portal.
 
-Point wildcard DNS (`*.yourschool.app`) at the app, serve over HTTPS, and set `ROOT_DOMAIN=yourschool.app`. For local development, `allowedDevOrigins` in `next.config.ts` lists the portal hosts so the dev server accepts their requests.
+## Public information pages
 
-## Theming
+The home page introduces the three portals and account setup. The accounts, help, contact and privacy pages follow the supplied school-facing copy. Replace the remaining bracketed contact, retention and provider details before publishing the privacy page; it is clearly marked as a draft.
 
-Light and dark mode are driven by CSS variables in `app/globals.css`. Components use token classes such as `bg-panel`, `bg-cell`, `border-line`, `text-fg`, `text-muted` and `bg-accent`, so they adapt automatically and rarely need `dark:` variants.
+## Portal pages and data
 
-- The theme defaults to the OS setting. The toggle in the header overrides it.
-- To restyle, change the variables in `:root` (light) and `.dark`. `--bg-glow` controls the colour wash behind the glass panels, and the alpha of `--panel` and `--cell` controls how see-through they are.
-- The `glass` utility applies the translucent background, border, shadow and blur.
+- The teacher portal renders the lesson planner.
+- The student timetable only renders published lessons.
+- The administrator portal provides a role-specific school setup overview.
+- Calendar samples remain local demo data in `lib/lessons.ts`. The FastAPI lesson response currently does not include the subject, class or start-time fields required by the calendar; wire live lessons only after those API fields and the client data layer are aligned.
 
-## Calendar and schedule
-
-`components/planner.tsx` renders the month grid and the schedule panel for the selected day.
-
-- The visible month is the `?month=YYYY-MM` search parameter. The server page reads it, fetches that month's lessons, and passes them to `Planner`. The component is keyed by month, so navigating remounts it with fresh state.
-- "Today" is computed in the school's timezone (`Africa/Nairobi`, set in `lib/dates.ts`) so server and browser agree.
-- Each subject gets a stable colour from `subjectColor` in `lib/dates.ts`.
-- Draft lessons appear dimmed with a badge. The API never returns drafts to students.
-
-## Data
-
-`lib/lessons.ts` currently returns sample data from `getLessonsForMonth(year, month)`. When the API is wired in, only the body of that function changes: it will call `GET /lessons?date_from=...&date_to=...` with the signed-in user's token.
-
-`lib/types.ts` mirrors the API's `LessonOut`. The calendar needs `start_time`, `subject_name` and `class_name`, so the backend's lesson model and schemas must include them (see `server/README.md`).
-
-## Adding a page to a portal
-
-1. Create `app/<portal>/(portal)/<route>/page.tsx`.
-2. Add a nav item for it in the `NAV` map in `components/app-shell.tsx`, using a path relative to the subdomain, for example `/classes`.
-
-## Roadmap
-
-- Login page per portal, backed by a Next route handler that calls the API and stores tokens in httpOnly cookies.
-- Check that the signed-in role matches the subdomain, and redirect otherwise.
-- Token refresh, logout, and the real user name in the header.
-- Replace the mock lessons with API calls.
-- Lesson create and edit dialog (`POST /lessons`, `PATCH /lessons/{id}`).
-- Admin screens for subjects, classes, teachers and assignments.
-- Mobile layout, with the side nav becoming a bottom bar on small screens.
-- A time-of-day greeting in the header as a small client component.
+The theme defaults to light mode. The header toggle switches light and dark modes. CSS variables in `app/globals.css` define the theme palette and reusable glass utility.
 
 ## Scripts
 
 | Command | Purpose |
 |---|---|
-| `npm run dev` | Development server |
-| `npm run build` | Production build |
+| `npm run dev` | Run the development server |
+| `npm run build` | Create the production build |
 | `npm run start` | Serve the production build |
-| `npm run lint` | Lint |
+| `npm run lint` | Lint the client |

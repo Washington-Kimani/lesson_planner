@@ -28,6 +28,7 @@ def create_student_account(
         account_holder=f"{user.first_name} {user.last_name}",
         login_id=user.login_id,
         temp_password=temp_password,
+        role=user.role,
     )
     return AccountCreated(
         user_id=str(user.id),
