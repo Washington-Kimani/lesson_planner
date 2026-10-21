@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.db.models import LessonStatus
+from app.db.models import LessonStatus, UserRole
 
 
 class TokenResponse(BaseModel):
@@ -135,3 +135,32 @@ class LessonOut(ORMModel):
     lesson_date: date
     duration_minutes: int
     status: LessonStatus
+
+
+class ProfileUpdate(BaseModel):
+    # only these fields will be editted
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True
+    )
+
+    first_name: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        max_length=100
+    )
+    last_name: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        max_length=100
+    )
+
+class ProfileOut(BaseModel):
+    id: str
+    login_id: str
+    first_name: str
+    last_name: str
+    email: Optional[str]
+    role: UserRole
+    must_change_password: bool
+    avatar_url: Optional[str]

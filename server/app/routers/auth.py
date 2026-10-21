@@ -18,7 +18,8 @@ from app.core.security import (
 from app.db.core import get_db
 from app.deps import get_current_user
 from app.db.models import RefreshToken, User, utc_now
-from app.schemas import ChangePasswordRequest, RefreshRequest, TokenResponse
+from app.schemas import ChangePasswordRequest, RefreshRequest, TokenResponse, ProfileOut
+from app.services.avatars import profile_out
 
 router = APIRouter(
     prefix="/auth",
@@ -137,13 +138,6 @@ def change_password(
 
 
 # route to get personal profile
-@router.get("/me")
+@router.get("/me", response_model=ProfileOut)
 def me(user: User = Depends(get_current_user)):
-    return {
-        "id": str(user.id),
-        "login_id": user.login_id,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "role": user.role,
-        "must_change_password": user.must_change_password,
-    }
+    return profile_out(user)

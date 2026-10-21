@@ -81,6 +81,16 @@ class User(Base):
         DateTime(timezone=True)
     )
 
+    avatar_public_id: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True
+    )
+
+    avatar_version: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=utc_now
