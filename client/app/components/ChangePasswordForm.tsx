@@ -49,7 +49,7 @@ export function ChangePasswordForm() {
 
     return (
         <main className="auth-page">
-            <header className="auth-header"><Link className="wordmark" href="/"><span className="brand-mark">L</span>Lesson Planner</Link><span>Secure your account</span></header>
+            <header className="auth-header"><Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link><span>Secure your account</span></header>
             <section className="auth-card">
                 <div className="auth-icon">✦</div><span className="eyebrow">ONE QUICK STEP</span>
                 <h1>Choose a new password</h1>
@@ -62,7 +62,7 @@ export function ChangePasswordForm() {
                     <label htmlFor="confirm-password">Confirm new password</label>
                     <input id="confirm-password" type="password" autoComplete="new-password" minLength={10} maxLength={128} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required />
                     {error && <p className="form-error" role="alert">{error}</p>}
-                    <button className="button button-dark auth-submit" disabled={loading}>{loading ? "Saving…" : "Save password"}</button>
+                    <button className="button button-primary auth-submit" disabled={loading}>{loading ? "Saving…" : "Save password"}</button>
                 </form>
                 <p className="auth-help">Use at least 10 characters. Don’t reuse a password you use elsewhere.</p>
             </section>

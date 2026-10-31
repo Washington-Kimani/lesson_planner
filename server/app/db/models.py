@@ -1,9 +1,9 @@
 import os
 import uuid
 import enum
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 from typing import Optional
-from sqlalchemy import ForeignKey, Boolean, Date, DateTime, Enum as SQLEnum, String, Text, Integer, UniqueConstraint
+from sqlalchemy import ForeignKey, Boolean, Date, DateTime, Enum as SQLEnum, String, Text, Integer, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.core import Base
@@ -223,6 +223,31 @@ class RefreshToken(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
 
+class AccountRequest(Base):
+    __tablename__ = "account_requests"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    first_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    email: Mapped[str] = mapped_column(String(254), index=True, nullable=False)
+    phone: Mapped[str] = mapped_column(String(30), nullable=False)
+    employee_number: Mapped[Optional[str]] = mapped_column(String(50))
+    department: Mapped[Optional[str]] = mapped_column(String(100))
+    qualification: Mapped[Optional[str]] = mapped_column(String(150))
+    subjects: Mapped[Optional[str]] = mapped_column(String(200))
+    message: Mapped[Optional[str]] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    reviewed_by_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+    review_note: Mapped[Optional[str]] = mapped_column(String(500))
+    teacher_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+
+
 #  SUBJECT MODEL
 class Subject(Base):
     __tablename__ = "subjects"
@@ -364,6 +389,8 @@ class Lesson(Base):
     homework: Mapped[Optional[str]] = mapped_column(Text)
 
     lesson_date: Mapped[Date] = mapped_column(Date, index=True)
+
+    start_time: Mapped[time] = mapped_column(Time, default=time(9), nullable=False)
     
     duration_minutes: Mapped[int] = mapped_column(
         Integer,
@@ -382,3 +409,16 @@ class Lesson(Base):
     )
 
     class_subject: Mapped["ClassSubject"] = relationship(back_populates="lessons")
+
+    @property
+    def class_name(self) -> str:
+        return self.class_subject.school_class.name
+
+    @property
+    def subject_name(self) -> str:
+        return self.class_subject.subject.name
+
+    @property
+    def teacher_name(self) -> str:
+        user = self.class_subject.teacher.user
+        return f"{user.first_name} {user.last_name}"

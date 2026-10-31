@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, time
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -41,7 +41,8 @@ class StudentCreate(BaseModel):
     date_of_birth: date
     guardian_name: str
     guardian_email: EmailStr
-    guardian_phone: str
+    guardian_phone: str = ""
+    class_id: Optional[uuid.UUID] = None
 
 
 class AccountCreated(BaseModel):
@@ -76,11 +77,18 @@ class ClassOut(ORMModel):
     name: str
     academic_year: str
     is_active: bool
+    student_count: int = 0
 
 
 class AssignmentCreate(BaseModel):
     subject_id: uuid.UUID
     teacher_login_id: str  # e.g. TCH-AB12-CD34
+
+
+class ClassSubjectCreate(BaseModel):
+    class_id: uuid.UUID
+    subject_id: uuid.UUID
+    teacher_id: uuid.UUID
 
 
 class AssignmentOut(ORMModel):
@@ -91,7 +99,7 @@ class AssignmentOut(ORMModel):
 
 
 class EnrollRequest(BaseModel):
-    student_login_id: str  # e.g. STU-AB12-CD34
+    student_id: uuid.UUID
 
 
 class RosterEntry(BaseModel):
@@ -109,6 +117,7 @@ class LessonCreate(BaseModel):
     materials: Optional[str] = None
     homework: Optional[str] = None
     lesson_date: date
+    start_time: time = time(9)
     duration_minutes: int = Field(default=40, ge=5, le=480)
     status: LessonStatus = LessonStatus.DRAFT
 
@@ -120,6 +129,7 @@ class LessonUpdate(BaseModel):
     materials: Optional[str] = None
     homework: Optional[str] = None
     lesson_date: Optional[date] = None
+    start_time: Optional[time] = None
     duration_minutes: Optional[int] = Field(default=None, ge=5, le=480)
     status: Optional[LessonStatus] = None
 
@@ -127,12 +137,16 @@ class LessonUpdate(BaseModel):
 class LessonOut(ORMModel):
     id: uuid.UUID
     class_subject_id: uuid.UUID
+    subject_name: str
+    class_name: str
+    teacher_name: str
     title: str
     objectives: Optional[str]
     content: Optional[str]
     materials: Optional[str]
     homework: Optional[str]
     lesson_date: date
+    start_time: time
     duration_minutes: int
     status: LessonStatus
 

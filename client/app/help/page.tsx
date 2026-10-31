@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { InfoPage } from "@/app/components/InfoPage";
 
 export const metadata: Metadata = {
-    title: "Help · Lesson Planner",
+    title: "Help · Tutorium",
     description: "Answers about login IDs, passwords and your account.",
 };
 
 const questions = [
+    ["How do I get a teacher account?", <>Fill in the <a href="/request-account">teacher account request form</a>. A school administrator reviews it, and once it’s approved your login ID and a temporary password are emailed to you.</>],
     ["What is a login ID?", <>It’s a code like <code>TCH-AB12-CD34</code> (teachers), <code>STU-AB12-CD34</code> (students) or <code>ADM-AB12-CD34</code> (administrators). You use it to sign in instead of an email address. Include the dashes. Capital letters aren’t required.</>],
     ["Where do I find my login ID?", <>In the email your school sent when your account was created. Search your inbox for “Your lesson planner account”.</>],
     ["My temporary password doesn’t work.", <>Type it carefully or copy and paste it, without any extra spaces. Temporary passwords never contain the letters I or O, or the numbers 0 or 1, so those characters can’t be mixed up. If it still fails, ask your administrator or teacher for help.</>],

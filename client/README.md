@@ -1,6 +1,6 @@
-# Lesson Planner Web
+# Tutorium Web
 
-Next.js frontend for the lesson planner. The bare domain hosts public school information, and role-specific subdomains provide teacher, student and administrator portals.
+Next.js frontend for Tutorium. The bare domain hosts public school information, and role-specific subdomains provide teacher, student and administrator portals.
 
 | Host | Purpose |
 |---|---|
@@ -84,3 +84,15 @@ The theme defaults to light mode. The header toggle switches light and dark mode
 | `npm run build` | Create the production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | Lint the client |
+
+
+## Features by role
+
+- **Public:** home, help, privacy, contact, and `/request-account`, the form teachers use to ask for an account.
+- **Admin:** overview stats, account requests (approve/decline), teachers, students, classes and rosters, subjects, teaching assignments, school calendar, all lessons.
+- **Teacher:** calendar with create/edit/publish/delete lessons, lesson search, my classes and rosters, create and manage student accounts.
+- **Student:** timetable, lesson search and detail, homework, my classes.
+- **Everyone:** profile (name, picture) and password change.
+
+Browser calls go through `app/api/proxy/[...path]`, which attaches the session token and refreshes it when needed.
+The endpoints the screens expect are listed in `BACKEND_CONTRACT.md`.
