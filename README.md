@@ -1,5 +1,5 @@
 # Lesson Planner Web
-
+![Preview of admin portal](./preview-admin.png)
 Next.js frontend for the lesson planner. One app serves three portals, one per role, each on its own subdomain, with a glass-style UI that supports light and dark mode.
 
 | Portal | Dev URL | Purpose |
