@@ -1,6 +1,6 @@
 export type PortalRole = "admin" | "teachers" | "students";
 
-const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost";
+const rootDomain = process.env.ROOT_DOMAIN ?? "localhost";
 const protocol = rootDomain === "localhost" ? "http" : "https";
 const port = rootDomain === "localhost" ? ":3000" : "";
 
