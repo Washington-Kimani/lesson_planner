@@ -5,7 +5,7 @@ export function InfoPage({ title, intro, children }: { title: string; intro: str
     return (
         <main className="info-page">
             <header className="public-header">
-                <Link className="wordmark" href="/"><span className="brand-mark">L</span>Lesson Planner</Link>
+                <Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link>
                 <Link className="text-link" href="/help">Help <ArrowLeft className="rotate-180" size={14} /></Link>
             </header>
             <article className="info-content">
@@ -14,7 +14,7 @@ export function InfoPage({ title, intro, children }: { title: string; intro: str
                 <p className="info-intro">{intro}</p>
                 <div className="info-body">{children}</div>
             </article>
-            <footer className="public-footer"><Link href="/">Lesson Planner</Link><nav><Link href="/help">Help</Link><Link href="/privacy">Privacy</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Your School</small></footer>
+            <footer className="public-footer"><Link href="/">Tutorium</Link><nav><Link href="/help">Help</Link><Link href="/privacy">Privacy</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Your School</small></footer>
         </main>
     );
 }

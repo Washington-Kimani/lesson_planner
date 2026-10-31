@@ -184,22 +184,26 @@ All routes except login, refresh and logout need `Authorization: Bearer <access 
 | POST, GET | `/admin/subjects` | |
 | POST | `/admin/classes` | |
 | POST, GET | `/admin/classes/{class_id}/assignments` | Assign a teacher by `teacher_login_id`. |
+| POST | `/classes` | Creates a class. Admin only; legacy `/admin/classes` is also available. |
+| POST | `/class-subjects` | Admin. Body `{class_id, subject_id, teacher_id}`; IDs are UUIDs, and `teacher_id` is the teacher user UUID. |
+| DELETE | `/class-subjects/{assignment_id}` | Admin. Deletes the assignment and its dependent lessons. |
 
 ### Teachers and classes
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/teachers/students` | Teacher or admin. Credentials go to the guardian. |
+| POST | `/students` | Teacher or admin. Accepts optional `class_id`; credentials go to the guardian. |
 | GET | `/classes` | Scoped by role. |
 | GET | `/classes/{class_id}/students` | Roster. Admin or a teacher of the class. |
-| POST | `/classes/{class_id}/students` | `{ "student_login_id": "STU-..." }` |
-| DELETE | `/classes/{class_id}/students/{student_login_id}` | Withdraws the student. |
+| POST | `/classes/{class_id}/students` | `{ "student_id": "<student UUID>" }` |
+| DELETE | `/classes/{class_id}/students/{student_id}` | Withdraws the student by UUID. |
 
 ### Lessons
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/lessons` | Filters: `class_subject_id`, `date_from`, `date_to`, `limit`, `offset`. |
 | GET | `/lessons/{id}` | |
-| POST | `/lessons` | Teachers only for their own assignments. |
+| POST | `/lessons` | Admin or teacher; teachers may use only their own assignments. Accepts `start_time` (`HH:MM`). |
 | PATCH | `/lessons/{id}` | Can't move a lesson to another assignment. |
 | DELETE | `/lessons/{id}` | |
 

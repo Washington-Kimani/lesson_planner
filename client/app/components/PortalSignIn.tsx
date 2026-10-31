@@ -14,7 +14,7 @@ const details = {
         placeholder: "TCH-AB12-CD34",
         helper: "Your login ID was emailed to you when your account was created.",
         forgot: "Forgot your password or login ID? Ask a school administrator to help you.",
-        note: <>Don’t have an account yet? Your school administrator creates it for you. <Link href={publicHref("/accounts")}>See how accounts work.</Link></>,
+        note: <>Don’t have an account yet? <Link href={publicHref("/request-account")}>Request a teacher account</Link> and an administrator will set it up. <Link href={publicHref("/accounts")}>See how accounts work.</Link></>,
         notYou: <>Not a teacher? <a href={portalHref("students")}>Student portal</a> · <a href={portalHref("admin")}>Administrator portal</a></>,
     },
     students: {
@@ -97,7 +97,7 @@ export function PortalSignIn({ portal, status }: { portal: PortalRole; status?: 
 
     return (
         <main className="auth-page">
-            <header className="auth-header"><Link className="wordmark" href={publicHref("/")}><span className="brand-mark">L</span>Lesson Planner</Link><a href={publicHref("/help")}>Help</a></header>
+            <header className="auth-header"><Link className="wordmark" href={publicHref("/")}><span className="brand-mark">T</span>Tutorium</Link><a href={publicHref("/help")}>Help</a></header>
             <section className="auth-card">
                 <div className="auth-icon"><LockKeyhole size={20} /></div>
                 <span className="eyebrow">YOUR SCHOOL PORTAL</span>
@@ -110,7 +110,7 @@ export function PortalSignIn({ portal, status }: { portal: PortalRole; status?: 
                     <label htmlFor="password">Password</label>
                     <div className="password-field"><input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}<span>{showPassword ? "Hide" : "Show"} password</span></button></div>
                     {error && <p className="form-error" role="alert">{error}</p>}
-                    <button type="submit" className="button button-dark auth-submit" disabled={loading}>{loading ? "Signing in…" : "Sign in"} {!loading && <MoveRight size={16} />}</button>
+                    <button type="submit" className="button button-primary auth-submit" disabled={loading}>{loading ? "Signing in…" : "Sign in"} {!loading && <MoveRight size={16} />}</button>
                 </form>
                 <p className="auth-help">{content.forgot}</p>
                 {content.note && <p className="auth-note">{content.note}</p>}

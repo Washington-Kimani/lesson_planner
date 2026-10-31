@@ -3,15 +3,15 @@ import { InfoPage } from "@/app/components/InfoPage";
 import { portalHref } from "@/lib/portal";
 
 export const metadata: Metadata = {
-    title: "How to get an account · Lesson Planner",
+    title: "How to get an account · Tutorium",
     description: "Accounts are created by your school. Find out how to get yours.",
 };
 
 export default function AccountsPage() {
-    return <InfoPage title="How to get an account" intro="Lesson Planner doesn’t have a public sign-up. Your school creates your account for you, so only the right people can get in.">
+    return <InfoPage title="How to get an account" intro="Tutorium accounts are created by your school, so only the right people can get in. Teachers can ask for one using the request form.">
         <h2>Who sets up your account</h2>
         <ul>
-            <li><strong>Teachers:</strong> An administrator creates your account. You’ll receive an email with your login ID and a temporary password.</li>
+            <li><strong>Teachers:</strong> <a href="/request-account">Send an account request</a>. An administrator reviews it and creates your account. You’ll receive an email with your login ID and a temporary password.</li>
             <li><strong>Students:</strong> Your teacher creates your account. Your login details are emailed to your parent or guardian, so ask them to share it with you.</li>
             <li><strong>Administrators:</strong> Administrator accounts are set up by the person who runs this system.</li>
         </ul>

@@ -1,5 +1,6 @@
 import secrets
 import uuid
+from datetime import datetime, time, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
@@ -92,7 +93,9 @@ def create_student(
         created_by_id=created_by.id,
         student_profile=Student(
             admission_number=data.admission_number,
-            date_of_birth=data.date_of_birth,
+            date_of_birth=datetime.combine(
+                data.date_of_birth, time.min, tzinfo=timezone.utc
+            ),
             guardian_name=data.guardian_name,
             guardian_email=data.guardian_email,
             guardian_phone=data.guardian_phone,

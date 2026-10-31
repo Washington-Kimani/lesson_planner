@@ -45,10 +45,18 @@ export const formatMonthTitle = (year: number, month: number) =>
         new Date(year, month, 1)
     );
 
-// Stable colour per subject, used for the strip on chips and cards
-const PALETTE = ["#ff6b4a", "#d4e84a", "#2b8cff", "#a78bfa", "#34d399", "#f59e0b"];
+// Stable colour per subject (and per avatar): the accent violet plus the reference palette's navy, amber, plum and teal
+const PALETTE = ["#6868fd", "#d4830b", "#057e87", "#0b5288", "#453b78", "#8687fe"];
 export function subjectColor(name: string): string {
     let hash = 0;
     for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
     return PALETTE[hash % PALETTE.length];
 }
+
+export const formatShortDate = (iso: string) =>
+    new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" }).format(
+        new Date(`${iso}T00:00:00`)
+    );
+
+export const formatStamp = (iso: string) =>
+    new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));

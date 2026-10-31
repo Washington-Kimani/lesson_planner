@@ -5,8 +5,8 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
-  title: "Lesson Planner",
-  description: "Plan lessons, manage classes and see what’s coming up in class.",
+  title: "Tutorium",
+  description: "Tutorium helps schools plan lessons, manage classes and keep students on track.",
 };
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });

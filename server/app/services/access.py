@@ -42,9 +42,9 @@ def classes_visible_to(user: User) -> Select:
     if user.role == UserRole.ADMIN:
         return stmt
 
-    if user.role == UserRole:
+    if user.role == UserRole.TEACHER:
         if user.teacher_profile is None:
-            return _forbidden
+            raise _forbidden
         return (
             stmt.join(ClassSubject, ClassSubject.class_id == SchoolClass.id)
             .where(ClassSubject.teacher_id == user.teacher_profile.id)
@@ -55,7 +55,7 @@ def classes_visible_to(user: User) -> Select:
         raise _forbidden
 
     return stmt.join(Enrollment, Enrollment.class_id == SchoolClass.id).where(
-        Enrollment.id == user.student_profile.id,
+        Enrollment.student_id == user.student_profile.id,
         Enrollment.withdrawn_at.is_(None)
     )
 
