@@ -27,7 +27,8 @@ def update_profile(
     db.commit()
     return profile_out(user)
 
-@router.put("/avatar", response_model=ProfileOut)
+@router.post("/avatar", response_model=ProfileOut)
+@router.put("/avatar", response_model=ProfileOut, include_in_schema=False)
 def set_avatar(
     file: UploadFile = File(...),
     user: User = Depends(get_active_user),

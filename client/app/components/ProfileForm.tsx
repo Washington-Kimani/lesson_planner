@@ -42,7 +42,7 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
         if (file.size > MAX_AVATAR_BYTES) return photo.setError("That picture is too large. Choose one under 2 MB.");
         const form = new FormData();
         form.set("file", file);
-        photo.run("upload", () => api("/users/me/avatar", { form }));
+        photo.run("upload", () => api("/users/me/avatar", { method: "POST", form }));
         if (fileInput.current) fileInput.current.value = "";
     }
 
