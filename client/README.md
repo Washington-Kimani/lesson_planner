@@ -1,6 +1,6 @@
-# Tutorium Web
+# Bellpath Web
 
-Next.js frontend for Tutorium. Public pages and role-specific portals are served from the same host, with portal paths under `/admin`, `/teachers` and `/students`.
+Next.js frontend for Bellpath. Public pages and role-specific portals are served from the same host, with portal paths under `/admin`, `/teachers` and `/students`.
 
 | Host | Purpose |
 |---|---|

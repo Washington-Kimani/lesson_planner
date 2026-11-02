@@ -97,7 +97,7 @@ export function PortalSignIn({ portal, status }: { portal: PortalRole; status?: 
 
     return (
         <main className="auth-page">
-            <header className="auth-header"><Link className="wordmark" href={publicHref("/")}><span className="brand-mark">T</span>Tutorium</Link><a href={publicHref("/help")}>Help</a></header>
+            <header className="auth-header"><Link className="wordmark" href={publicHref("/")}><span className="brand-mark">B</span>Bellpath</Link><a href={publicHref("/help")}>Help</a></header>
             <section className="auth-card">
                 <div className="auth-icon"><LockKeyhole size={20} /></div>
                 <span className="eyebrow">YOUR SCHOOL PORTAL</span>

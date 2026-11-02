@@ -1,7 +1,7 @@
 import { CalendarView } from "@/app/components/CalendarView";
 
 export const metadata = {
-    title: "Student timetable · Tutorium",
+    title: "Student timetable · Bellpath",
     description: "See your lessons and what’s coming up in class.",
 };
 

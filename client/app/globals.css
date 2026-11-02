@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tutorium palette — sampled from the reference dashboard:
+/* Bellpath palette — sampled from the reference dashboard:
    indigo-violet #6868fd, lavender tint #f1f0fe, lavender border #a0a5f7,
    white surfaces, #ebebeb hairlines, near-black ink, amber #e29b04 accent. */
 :root {

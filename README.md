@@ -1,6 +1,6 @@
-# Lesson Planner Web
+# Bellpath Web
 ![Preview of admin portal](./preview-admin.png)
-Next.js frontend for the lesson planner. One app serves three role-specific portals on normal paths, with a glass-style UI that supports light and dark mode.
+Next.js frontend for Bellpath, a school lesson-planning app. One app serves three role-specific portals on normal paths, with a glass-style UI that supports light and dark mode.
 
 | Portal | Dev URL | Purpose |
 |---|---|---|

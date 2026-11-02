@@ -2,7 +2,7 @@ import { StudentsManager } from "@/app/components/StudentsManager";
 import { apiGet } from "@/lib/api";
 import type { ClassRoom, Student } from "@/lib/types";
 
-export const metadata = { title: "Students · Tutorium" };
+export const metadata = { title: "Students · Bellpath" };
 
 export default async function Students() {
     const [students, classes] = await Promise.all([apiGet<Student[]>("/students"), apiGet<ClassRoom[]>("/classes")]);

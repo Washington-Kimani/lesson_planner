@@ -1,6 +1,6 @@
-# Lesson Planner API
+# Bellpath API
 
-FastAPI and SQLAlchemy backend for the lesson planner: token authentication, role-based authorization, and the school data model (subjects, classes, enrolments, lessons).
+FastAPI and SQLAlchemy backend for Bellpath: token authentication, role-based authorization, and the school data model (subjects, classes, enrolments, lessons).
 
 ## Stack
 

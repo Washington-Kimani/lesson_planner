@@ -31,8 +31,8 @@ export default function Home() {
         <main className="public-page">
             <header className="public-header">
                 <Link className="wordmark" href="/">
-                    <span className="brand-mark">T</span>
-                    Tutorium
+                    <span className="brand-mark">B</span>
+                    Bellpath
                 </Link>
                 <nav aria-label="Main navigation" className="public-nav">
                     <Link href="/help">Help</Link>
@@ -44,14 +44,14 @@ export default function Home() {
                 <div className="hero-copy">
                     <span className="eyebrow"><span className="eyebrow-dot" /> A calmer way to plan</span>
                     <h1>Lesson planning,<br /><em>all in one place.</em></h1>
-                    <p>Tutorium gives your school’s teachers a simple way to plan lessons, and gives students a clear view of what’s coming up in class.</p>
+                    <p>Bellpath gives your school’s teachers a simple way to plan lessons, and gives students a clear view of what’s coming up in class.</p>
                     <div className="hero-actions">
                         <a href={portalHref("teachers")} className="button button-primary">Sign in <ArrowRight size={16} /></a>
                         <Link href="/request-account" className="button button-light">Request a teacher account</Link>
                     </div>
-                    <div className="hero-note"><span className="note-avatar">TU</span><span>For the whole school, from first bell to last.</span></div>
+                    <div className="hero-note"><span className="note-avatar">BP</span><span>For the whole school, from first bell to last.</span></div>
                 </div>
-                <div className="preview-card" aria-label="Tutorium calendar preview">
+                <div className="preview-card" aria-label="Bellpath calendar preview">
                     <div className="preview-top"><div><span className="preview-label">YOUR WEEK</span><h2>Weekly overview</h2></div><span className="preview-dots">•••</span></div>
                     <div className="preview-week">{["M", "T", "W", "T", "F"].map((day, index) => <div key={`${day}-${index}`} className={index === 2 ? "week-day selected-day" : "week-day"}><span>{day}</span><b>{[12, 13, 14, 15, 16][index]}</b></div>)}</div>
                     <div className="preview-lesson lesson-purple"><span className="lesson-time">09:00</span><span className="lesson-line" /><span><b>Fractions &amp; number patterns</b><small>Mathematics · Grade 7 East</small></span></div>
@@ -91,7 +91,7 @@ export default function Home() {
             </section>
 
             <section className="closing-strip"><div><span className="eyebrow">HERE TO HELP</span><h2>Not sure where to start?</h2><p>Request a teacher account, read how accounts work, or contact your school administrator.</p></div><Link className="button button-light" href="/request-account">Request an account <ArrowRight size={16} /></Link></section>
-            <footer className="public-footer"><Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link><nav aria-label="Footer navigation"><Link href="/help">Help</Link><Link href="/privacy">Privacy</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Your School</small></footer>
+            <footer className="public-footer"><Link className="wordmark" href="/"><span className="brand-mark">B</span>Bellpath</Link><nav aria-label="Footer navigation"><Link href="/help">Help</Link><Link href="/privacy">Privacy</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Your School</small></footer>
         </main>
     );
 }

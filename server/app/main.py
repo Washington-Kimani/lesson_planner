@@ -12,7 +12,7 @@ from app.routers import (
     teachers,
 )
 
-app = FastAPI(title="Lesson Planner")
+app = FastAPI(title="Bellpath API")
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(account_requests.router)

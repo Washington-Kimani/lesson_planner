@@ -73,4 +73,4 @@ def send_credentials_email(
         f"If you weren't expecting this email, please ignore it."
     )
 
-    send_email(to, "Your lesson planner account", body)
+    send_email(to, "Your Bellpath account", body)

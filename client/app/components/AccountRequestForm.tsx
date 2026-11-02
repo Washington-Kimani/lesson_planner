@@ -100,7 +100,7 @@ export function AccountRequestForm() {
                 </div>
                 <label className="check-row full">
                     <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
-                    <span>I confirm these details are correct, and I’m happy for Tutorium to contact me by email and phone about my account.</span>
+                    <span>I confirm these details are correct, and I’m happy for Bellpath to contact me by email and phone about my account.</span>
                 </label>
                 {error && <p className="alert full" role="alert">{error}</p>}
                 <button type="submit" className="button button-primary full" disabled={loading}>{loading ? "Sending…" : "Send request"}</button>

@@ -2,7 +2,7 @@ import { TeachersManager } from "@/app/components/TeachersManager";
 import { apiGet } from "@/lib/api";
 import type { Teacher } from "@/lib/types";
 
-export const metadata = { title: "Teachers · Tutorium" };
+export const metadata = { title: "Teachers · Bellpath" };
 
 export default async function Teachers() {
     const teachers = await apiGet<Teacher[]>("/teachers");

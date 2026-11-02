@@ -5,7 +5,7 @@ import { apiGet } from "@/lib/api";
 import type { AccountRequest, RequestStatus } from "@/lib/types";
 import { portalPath } from "@/lib/portal";
 
-export const metadata = { title: "Account requests · Tutorium" };
+export const metadata = { title: "Account requests · Bellpath" };
 
 const TABS: { status: RequestStatus; label: string }[] = [
     { status: "pending", label: "Pending" },

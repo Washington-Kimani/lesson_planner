@@ -4,15 +4,15 @@ import Link from "next/link";
 import { AccountRequestForm } from "@/app/components/AccountRequestForm";
 
 export const metadata: Metadata = {
-    title: "Request a teacher account · Tutorium",
-    description: "Teachers can ask a school administrator to create their Tutorium account.",
+    title: "Request a teacher account · Bellpath",
+    description: "Teachers can ask a school administrator to create their Bellpath account.",
 };
 
 export default function RequestAccountPage() {
     return (
         <main className="auth-page">
             <header className="auth-header">
-                <Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link>
+                <Link className="wordmark" href="/"><span className="brand-mark">B</span>Bellpath</Link>
                 <Link href="/help">Help</Link>
             </header>
             <AccountRequestForm />
