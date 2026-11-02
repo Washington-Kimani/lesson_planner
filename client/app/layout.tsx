@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -7,11 +8,14 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Tutorium",
   description: "Tutorium helps schools plan lessons, manage classes and keep students on track.",
+  icons: {
+    icon: "/favicon.png"
+  }
 };
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"

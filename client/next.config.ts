@@ -1,11 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-    allowedDevOrigins: [
-        "admin.localhost",
-        "teachers.localhost",
-        "students.localhost",
-    ],
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

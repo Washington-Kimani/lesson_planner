@@ -2,6 +2,7 @@ import { LessonsList } from "@/app/components/LessonsList";
 import { apiGet } from "@/lib/api";
 import { todayISO } from "@/lib/dates";
 import { searchLessons } from "@/lib/lessons";
+import { portalPath } from "@/lib/portal";
 import type { ClassSubject } from "@/lib/types";
 
 type Role = "teacher" | "student" | "admin";
@@ -40,7 +41,7 @@ export async function LessonsPage({ filters, role }: { filters: LessonFilters; r
             <div className="page-head">
                 <div><span className="eyebrow">LESSONS</span><h2>{role === "student" ? "My lessons" : "Lessons"}</h2><p>{intro}</p></div>
             </div>
-            <form className="toolbar" action="/lessons">
+            <form className="toolbar" action={portalPath(role === "admin" ? "admin" : role === "teacher" ? "teachers" : "students", "/lessons")}>
                 <input className="input grow" name="q" defaultValue={filters.q ?? ""} placeholder="Search by title, subject or class" aria-label="Search lessons" />
                 <select className="input" name="when" defaultValue={when} aria-label="When">
                     <option value="upcoming">Upcoming</option><option value="past">Past</option><option value="all">All dates</option>

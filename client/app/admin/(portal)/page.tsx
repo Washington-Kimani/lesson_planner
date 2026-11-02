@@ -5,6 +5,7 @@ import { Avatar } from "@/app/components/Avatar";
 import { StatCard } from "@/app/components/StatCard";
 import { apiGet } from "@/lib/api";
 import { formatStamp } from "@/lib/dates";
+import { portalPath } from "@/lib/portal";
 import type { AccountRequest, AdminStats } from "@/lib/types";
 
 export const metadata = {
@@ -13,10 +14,10 @@ export const metadata = {
 };
 
 const shortcuts = [
-    { href: "/teachers", label: "Add or manage teachers" },
-    { href: "/classes", label: "Set up classes and enrol students" },
-    { href: "/subjects", label: "Manage subjects" },
-    { href: "/assignments", label: "Assign teachers to classes" },
+    { href: portalPath("admin", "/teachers"), label: "Add or manage teachers" },
+    { href: portalPath("admin", "/classes"), label: "Set up classes and enrol students" },
+    { href: portalPath("admin", "/subjects"), label: "Manage subjects" },
+    { href: portalPath("admin", "/assignments"), label: "Assign teachers to classes" },
 ];
 
 export default async function AdminHome() {
@@ -38,17 +39,17 @@ export default async function AdminHome() {
                         <h3><span className="pill-new">{stats.pending_requests}</span>Teacher account {stats.pending_requests === 1 ? "request" : "requests"} waiting</h3>
                         <p>Review the details and approve to create the account. Login details are emailed automatically.</p>
                     </div>
-                    <Link href="/requests" className="btn btn-primary">Review requests</Link>
+                    <Link href={portalPath("admin", "/requests")} className="btn btn-primary">Review requests</Link>
                 </section>
             )}
 
             <div className="stat-grid">
-                <StatCard label="Teachers" value={stats.teachers} icon={GraduationCap} href="/teachers" />
-                <StatCard label="Students" value={stats.students} icon={UsersRound} href="/students" />
-                <StatCard label="Classes" value={stats.classes} icon={Library} href="/classes" />
-                <StatCard label="Subjects" value={stats.subjects} icon={BookOpen} href="/subjects" />
-                <StatCard label="Lessons" value={stats.lessons} note={`${published}% published to students`} icon={CalendarDays} href="/lessons" />
-                <StatCard label="Requests" value={stats.pending_requests} note="waiting for review" icon={UserCheck} href="/requests" />
+                <StatCard label="Teachers" value={stats.teachers} icon={GraduationCap} href={portalPath("admin", "/teachers")} />
+                <StatCard label="Students" value={stats.students} icon={UsersRound} href={portalPath("admin", "/students")} />
+                <StatCard label="Classes" value={stats.classes} icon={Library} href={portalPath("admin", "/classes")} />
+                <StatCard label="Subjects" value={stats.subjects} icon={BookOpen} href={portalPath("admin", "/subjects")} />
+                <StatCard label="Lessons" value={stats.lessons} note={`${published}% published to students`} icon={CalendarDays} href={portalPath("admin", "/lessons")} />
+                <StatCard label="Requests" value={stats.pending_requests} note="waiting for review" icon={UserCheck} href={portalPath("admin", "/requests")} />
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">

@@ -1,13 +1,13 @@
 # Tutorium Web
 
-Next.js frontend for Tutorium. The bare domain hosts public school information, and role-specific subdomains provide teacher, student and administrator portals.
+Next.js frontend for Tutorium. Public pages and role-specific portals are served from the same host, with portal paths under `/admin`, `/teachers` and `/students`.
 
 | Host | Purpose |
 |---|---|
 | `http://localhost:3000` | Home, accounts, help, contact and privacy pages |
-| `http://teachers.localhost:3000` | Teacher sign-in and lesson calendar |
-| `http://students.localhost:3000` | Student sign-in and published timetable |
-| `http://admin.localhost:3000` | Administrator sign-in and school overview |
+| `http://localhost:3000/teachers` | Teacher portal |
+| `http://localhost:3000/students` | Student portal |
+| `http://localhost:3000/admin` | Administrator portal |
 
 ## Stack
 
@@ -25,43 +25,35 @@ You need Node.js 20.9 or newer.
 cd client
 npm install
 cat > .env.local <<'EOF'
-ROOT_DOMAIN=localhost
-NEXT_PUBLIC_ROOT_DOMAIN=localhost
 API_BASE_URL=http://127.0.0.1:8000
 EOF
 npm run dev
 ```
 
-Run the FastAPI service separately (see [the server README](../server/README.md)). If a browser doesn't resolve `*.localhost`, add this line to `/etc/hosts`:
-
-```text
-127.0.0.1 admin.localhost teachers.localhost students.localhost
-```
+Run the FastAPI service separately (see [the server README](../server/README.md)).
 
 ## Environment
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ROOT_DOMAIN` | `localhost` | Root host used by `proxy.ts` to identify role subdomains. Set to your production domain. |
-| `NEXT_PUBLIC_ROOT_DOMAIN` | `localhost` | Root domain used to build links from sign-in screens to the public site and other portals. Set to the same domain as `ROOT_DOMAIN`. |
 | `API_BASE_URL` | `http://127.0.0.1:8000` | Internal URL for the FastAPI service. |
 
-For production, point wildcard DNS (`*.yourschool.app`) at the app, serve over HTTPS, and set both domain variables to `yourschool.app`. Portal links use HTTPS outside local development.
+For production, serve the app over HTTPS at your school domain. Public and portal routes share the same origin.
 
 ## Routing and sessions
 
-`proxy.ts` rewrites each role subdomain into its matching App Router folder. Portal paths are hidden on the bare domain, so `/admin`, `/teachers` and `/students` there return 404.
+`proxy.ts` checks authentication and role on portal paths without changing the browser URL.
 
-- The bare domain has public routes: `/`, `/accounts`, `/help`, `/contact` and `/privacy`.
-- Each portal has a `/login` page outside its authenticated app shell.
-- An authenticated portal is checked against `/auth/me` on each page request. A user visiting the wrong role host is sent to their correct portal.
+- Public routes include `/`, `/accounts`, `/help`, `/contact` and `/privacy`.
+- Portal routes are rooted at `/admin`, `/teachers` and `/students`; each login page is available at its portal's `/login` path.
+- An authenticated portal is checked against `/auth/me` on each page request. A user opening the wrong role's portal is redirected to their correct portal path.
 - Login and password changes call the FastAPI service through Next route handlers. Access and refresh tokens live in host-only, `httpOnly`, `SameSite=Lax` cookies; the access cookie is `Secure` in production. Tokens are never stored in local storage or exposed to client JavaScript.
 - When an access token expires, the proxy rotates the refresh token through `/auth/refresh` and updates both cookies. The server stores only a hash of the refresh token.
 - First sign-in requires a new password of at least 10 characters. Protected portal requests are redirected to `/change-password` until that succeeds.
 - Sign out revokes the refresh token and clears the browser cookies.
 - Role checks are a user-experience boundary, not the security boundary: FastAPI validates the current account and permissions on protected API operations.
 
-Cookies are host-only. A teacher session on `teachers.yourschool.app` is not shared with the student or administrator portal.
+The authentication cookies are shared across portal paths on the same origin. The proxy checks the account role for each portal request and redirects users to the matching portal.
 
 ## Public information pages
 
