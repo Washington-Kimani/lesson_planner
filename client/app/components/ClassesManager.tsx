@@ -9,12 +9,14 @@ import { Modal } from "@/app/components/Modal";
 import { api } from "@/lib/client";
 import { subjectColor } from "@/lib/dates";
 import { useAction } from "@/lib/useAction";
+import { portalPath, type PortalRole } from "@/lib/portal";
 import type { ClassRoom, ClassSubject } from "@/lib/types";
 
-export function ClassesManager({ classes, classSubjects, canManage }: {
+export function ClassesManager({ classes, classSubjects, canManage, portal }: {
     classes: ClassRoom[];
     classSubjects: ClassSubject[];
     canManage: boolean;
+    portal: PortalRole;
 }) {
     const { run, busy, error, setError } = useAction();
     const [form, setForm] = useState<{ room?: ClassRoom } | null>(null);
@@ -53,7 +55,7 @@ export function ClassesManager({ classes, classSubjects, canManage }: {
                             <article key={room.id} className="glass panel flex flex-col gap-3">
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
-                                        <h3><Link href={`/classes/${room.id}`} className="no-underline hover:text-accent-text">{room.name}</Link></h3>
+                                        <h3><Link href={portalPath(portal, `/classes/${room.id}`)} className="no-underline hover:text-accent-text">{room.name}</Link></h3>
                                         <p className="panel-sub">{room.academic_year}</p>
                                     </div>
                                     <span className="badge"><UsersRound size={12} /> {room.student_count}</span>
@@ -65,7 +67,7 @@ export function ClassesManager({ classes, classSubjects, canManage }: {
                                     ))}
                                 </div>
                                 <div className="mt-auto flex items-center justify-between gap-2 pt-1">
-                                    <Link href={`/classes/${room.id}`} className="text-link">Open class</Link>
+                                    <Link href={portalPath(portal, `/classes/${room.id}`)} className="text-link">Open class</Link>
                                     {canManage && (
                                         <div className="row-actions">
                                             <button type="button" className="btn btn-sm" aria-label={`Edit ${room.name}`} onClick={() => open(room)}><Pencil size={14} /></button>

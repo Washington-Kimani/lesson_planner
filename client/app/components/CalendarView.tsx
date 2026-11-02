@@ -5,6 +5,7 @@ import { StatCard } from "@/app/components/StatCard";
 import { apiGet } from "@/lib/api";
 import { formatShortDate, monthKey, todayISO } from "@/lib/dates";
 import { getLessonsForMonth } from "@/lib/lessons";
+import { portalPath } from "@/lib/portal";
 import type { ClassSubject } from "@/lib/types";
 
 type Role = "teacher" | "student" | "admin";
@@ -33,14 +34,14 @@ export async function CalendarView({ month, role }: { month?: string; role: Role
                     <StatCard label="Today" value={todays.length} note={todays.length === 1 ? "lesson today" : "lessons today"} icon={CalendarDays} />
                     <StatCard label="Drafts" value={inMonth.filter((l) => l.status === "draft").length} note="not yet shown to students" icon={ClipboardList} />
                     <StatCard label="This month" value={inMonth.length} note="lessons planned" icon={BookOpen} />
-                    <StatCard label="Classes" value={new Set(classSubjects.map((c) => c.class_id)).size} note="you teach" icon={Library} href="/classes" />
+                    <StatCard label="Classes" value={new Set(classSubjects.map((c) => c.class_id)).size} note="you teach" icon={Library} href={portalPath("teachers", "/classes")} />
                 </div>
             )}
             {role === "student" && (
                 <div className="stat-grid">
                     <StatCard label="Today" value={todays.length} note={todays.length === 1 ? "lesson today" : "lessons today"} icon={CalendarDays} />
                     <StatCard label="Next lesson" value={next ? formatShortDate(next.lesson_date) : "—"} note={next ? `${next.title} · ${next.start_time.slice(0, 5)}` : "Nothing coming up"} icon={BookOpen} />
-                    <StatCard label="Homework" value={lessons.filter((l) => l.lesson_date >= today && l.homework).length} note="set for upcoming lessons" icon={ClipboardList} href="/homework" />
+                    <StatCard label="Homework" value={lessons.filter((l) => l.lesson_date >= today && l.homework).length} note="set for upcoming lessons" icon={ClipboardList} href={portalPath("students", "/homework")} />
                 </div>
             )}
             <Planner

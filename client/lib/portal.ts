@@ -1,13 +1,19 @@
 export type PortalRole = "admin" | "teachers" | "students";
 
-const rootDomain = process.env.ROOT_DOMAIN ?? "localhost";
-const protocol = rootDomain === "localhost" ? "http" : "https";
-const port = rootDomain === "localhost" ? ":3000" : "";
+export function portalPath(role: PortalRole, path = "") {
+    const suffix = !path || path === "/" ? "" : path.startsWith("/") ? path : `/${path}`;
+    return `/${role}${suffix}`;
+}
 
 export function portalHref(role: PortalRole, path = "/login") {
-    return `${protocol}://${role}.${rootDomain}${port}${path}`;
+    return portalPath(role, path);
+}
+
+export function portalRoleFromPath(pathname: string): PortalRole | null {
+    const role = pathname.split("/")[1];
+    return role === "admin" || role === "teachers" || role === "students" ? role : null;
 }
 
 export function publicHref(path: string) {
-    return `${protocol}://${rootDomain}${port}${path}`;
+    return path;
 }

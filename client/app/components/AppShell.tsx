@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { Avatar } from "@/app/components/Avatar";
 import { LogoutButton } from "@/app/components/LogoutButton";
 import { ThemeToggle } from "@/app/components/ThemeToggle";
+import { portalPath } from "@/lib/portal";
 
 export type Portal = "admin" | "teachers" | "students";
 
@@ -67,16 +68,17 @@ export function AppShell({
     children: React.ReactNode;
 }) {
     const currentPath = usePathname();
-    if (currentPath === "/change-password") return <>{children}</>;
+    const base = `/${portal}`;
+    const portalUrl = (path: string) => portalPath(portal, path);
+    if (currentPath === `${base}/change-password`) return <>{children}</>;
 
-    // The path may or may not include the portal folder depending on rewrite handling
-    const pathname = currentPath.replace(new RegExp(`^/${portal}`), "") || "/";
+    const pathname = currentPath.slice(base.length) || "/";
     const firstName = name.split(" ")[0];
 
     const links = (className: string) => NAV[portal].map(({ href, label, icon: Icon, badge }) => {
         const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
         return (
-            <Link key={href} href={href} className={className} aria-current={active ? "page" : undefined}>
+            <Link key={href} href={portalUrl(href)} className={className} aria-current={active ? "page" : undefined}>
                 <Icon size={18} />
                 <span>{label}</span>
                 {badge === "requests" && pendingRequests > 0 && <span className="side-count">{pendingRequests}</span>}
@@ -87,13 +89,13 @@ export function AppShell({
     return (
         <div className="min-h-screen lg:flex">
             <aside className="app-sidebar" aria-label={`${ROLE_LABEL[portal]} navigation`}>
-                <Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link>
+                <Link className="wordmark" href={base}><span className="brand-mark">T</span>Tutorium</Link>
                 <span className="portal-role">{ROLE_LABEL[portal]} portal</span>
                 {links("side-link")}
                 <div className="side-spacer" />
                 <div className="side-divider" />
                 <Link
-                    href="/profile"
+                    href={portalUrl("/profile")}
                     className="side-link"
                     aria-current={pathname === "/profile" ? "page" : undefined}
                 >
@@ -103,23 +105,23 @@ export function AppShell({
 
             <div className="min-w-0 flex-1">
                 <header className="app-topbar">
-                    <span className="lg:hidden"><Link className="wordmark" href="/"><span className="brand-mark">T</span></Link></span>
+                    <span className="lg:hidden"><Link className="wordmark" href={base}><span className="brand-mark">T</span></Link></span>
                     <div className="min-w-0 flex-1">
                         <h1 className="truncate text-lg font-semibold tracking-tight lg:text-xl">Welcome back, {firstName}</h1>
                         <p className="hidden text-xs text-muted sm:block">{ROLE_LABEL[portal]} · Tutorium</p>
                     </div>
-                    <form action="/lessons" role="search" className="search-box">
+                    <form action={portalUrl("/lessons")} role="search" className="search-box">
                         <Search className="size-4 text-muted" />
                         <input name="q" placeholder="Search lessons" aria-label="Search lessons" />
                     </form>
                     <ThemeToggle />
                     {portal === "admin" && (
-                        <Link href="/requests" className="icon-button" aria-label={`Account requests${pendingRequests ? `, ${pendingRequests} pending` : ""}`}>
+                        <Link href={portalUrl("/requests")} className="icon-button" aria-label={`Account requests${pendingRequests ? `, ${pendingRequests} pending` : ""}`}>
                             <Bell className="size-4" />
                             {pendingRequests > 0 && <span className="icon-badge">{pendingRequests}</span>}
                         </Link>
                     )}
-                    <Link href="/profile" className="user-chip" aria-label="My profile">
+                    <Link href={portalUrl("/profile")} className="user-chip" aria-label="My profile">
                         <Avatar name={name} src={avatarUrl} size={30} />
                         <span className="name">{name}</span>
                     </Link>
@@ -131,7 +133,7 @@ export function AppShell({
 
             <nav aria-label={`${ROLE_LABEL[portal]} navigation`} className="portal-nav">
                 {links("side-link")}
-                <Link href="/profile" className="side-link" aria-current={pathname === "/profile" ? "page" : undefined}>
+                <Link href={portalUrl("/profile")} className="side-link" aria-current={pathname === "/profile" ? "page" : undefined}>
                     <UserRound size={18} /><span>Profile</span>
                 </Link>
             </nav>

@@ -1,12 +1,12 @@
 # Lesson Planner Web
 ![Preview of admin portal](./preview-admin.png)
-Next.js frontend for the lesson planner. One app serves three portals, one per role, each on its own subdomain, with a glass-style UI that supports light and dark mode.
+Next.js frontend for the lesson planner. One app serves three role-specific portals on normal paths, with a glass-style UI that supports light and dark mode.
 
 | Portal | Dev URL | Purpose |
 |---|---|---|
-| Admin | `http://admin.localhost:3000` | Set up subjects, classes, teachers and assignments |
-| Teachers | `http://teachers.localhost:3000` | Plan lessons, manage students and enrolment |
-| Students | `http://students.localhost:3000` | View published lessons |
+| Admin | `http://localhost:3000/admin` | Set up subjects, classes, teachers and assignments |
+| Teachers | `http://localhost:3000/teachers` | Plan lessons, manage students and enrolment |
+| Students | `http://localhost:3000/students` | View published lessons |
 
 ## Stack
 
@@ -20,9 +20,8 @@ Next.js frontend for the lesson planner. One app serves three portals, one per r
 
 ```
 web/
-  proxy.ts                          Subdomain -> portal rewrite
-  next.config.ts                    allowedDevOrigins for the portal hosts
-  .env.local                        ROOT_DOMAIN
+  proxy.ts                          Portal authentication and role checks
+  .env.local                        API_BASE_URL
   app/
     layout.tsx                      Font, ThemeProvider
     globals.css                     Theme tokens, glass utility
@@ -48,41 +47,36 @@ You need Node.js 20.9 or newer.
 ```bash
 cd web
 npm install
-echo "ROOT_DOMAIN=localhost" > .env.local
+echo "API_BASE_URL=http://127.0.0.1:8000" > .env.local
 npm run dev
 ```
 
-Open one of the portal URLs above. The plain `http://localhost:3000` shows a small landing page, and direct visits to `/admin`, `/teachers` or `/students` on a non-portal host return 404.
-
-If a browser doesn't resolve `*.localhost`, add this line to `/etc/hosts`:
-
-```
-127.0.0.1 admin.localhost teachers.localhost students.localhost
-```
+Open one of the portal URLs above. The plain `http://localhost:3000` shows the public landing page.
 
 ### Environment
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ROOT_DOMAIN` | `localhost` | Domain the portal subdomains hang off. Use your real domain in production, for example `yourschool.app`. |
+| `API_BASE_URL` | `http://127.0.0.1:8000` | Internal URL for the FastAPI service. |
 
-## How subdomain routing works
+## Portal routing
 
-`proxy.ts` (called `middleware.ts` before Next.js 16) reads the `Host` header and rewrites the request to the matching folder. The browser URL doesn't change.
+Portal routes use their visible URL paths directly:
 
 ```
-teachers.localhost:3000/        ->  app/teachers/(portal)/page.tsx
-teachers.localhost:3000/foo     ->  app/teachers/(portal)/foo/page.tsx
+localhost:3000/admin            ->  app/admin/(portal)/page.tsx
+localhost:3000/teachers          ->  app/teachers/(portal)/page.tsx
+localhost:3000/students          ->  app/students/(portal)/page.tsx
 ```
 
-- Navigation links inside a portal use plain paths such as `/` or `/classes`.
-- The `(portal)` route group keeps the app shell off pages that shouldn't have it, such as `/login`. The group name isn't part of the URL.
-- Cookies and `localStorage` are scoped to each host, so a session in one portal isn't visible to the others. The theme choice is also stored per portal.
-- The proxy only separates portals. The API enforces roles.
+- Portal navigation keeps links under the corresponding role prefix, such as `/admin/classes` or `/teachers/classes`.
+- The `(portal)` route group keeps the app shell off each portal's `/login` page, such as `/admin/login`. The group name isn't part of the URL.
+- The proxy checks the signed-in role on each portal request and redirects users to the matching portal when needed.
+- Authentication cookies are shared across paths on the same host, so the proxy enforces the portal role and the API remains the security boundary.
 
 ### Production
 
-Point wildcard DNS (`*.yourschool.app`) at the app, serve over HTTPS, and set `ROOT_DOMAIN=yourschool.app`. For local development, `allowedDevOrigins` in `next.config.ts` lists the portal hosts so the dev server accepts their requests.
+Serve the app over HTTPS at your school domain; the same host serves the public site and all three portals.
 
 ## Theming
 
@@ -110,12 +104,12 @@ Light and dark mode are driven by CSS variables in `app/globals.css`. Components
 ## Adding a page to a portal
 
 1. Create `app/<portal>/(portal)/<route>/page.tsx`.
-2. Add a nav item for it in the `NAV` map in `components/app-shell.tsx`, using a path relative to the subdomain, for example `/classes`.
+2. Add a nav item for it in the `NAV` map in `components/app-shell.tsx`, using a path relative to the portal prefix, for example `/classes`.
 
 ## Roadmap
 
 - Login page per portal, backed by a Next route handler that calls the API and stores tokens in httpOnly cookies.
-- Check that the signed-in role matches the subdomain, and redirect otherwise.
+- Check that the signed-in role matches the requested portal, and redirect otherwise.
 - Token refresh, logout, and the real user name in the header.
 - Replace the mock lessons with API calls.
 - Lesson create and edit dialog (`POST /lessons`, `PATCH /lessons/{id}`).

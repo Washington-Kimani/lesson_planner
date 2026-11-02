@@ -3,8 +3,10 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { PortalRole } from "@/lib/portal";
+import { portalPath } from "@/lib/portal";
 
-export function ChangePasswordForm() {
+export function ChangePasswordForm({ portal }: { portal: PortalRole }) {
     const router = useRouter();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -35,10 +37,10 @@ export function ChangePasswordForm() {
                 setError(result.error === "connection" ? "We couldn’t reach the server. Check your connection and try again." :
                     result.error === "session_ended" ? "Your session ended. Sign in again to continue." :
                         "We couldn’t update your password. Check your current password and try again.");
-                if (result.error === "session_ended") router.replace("/login?status=session");
+                if (result.error === "session_ended") router.replace(portalPath(portal, "/login?status=session"));
                 return;
             }
-            router.replace("/");
+            router.replace(portalPath(portal));
             router.refresh();
         } catch {
             setError("We couldn’t reach the server. Check your connection and try again.");
@@ -49,7 +51,7 @@ export function ChangePasswordForm() {
 
     return (
         <main className="auth-page">
-            <header className="auth-header"><Link className="wordmark" href="/"><span className="brand-mark">T</span>Tutorium</Link><span>Secure your account</span></header>
+            <header className="auth-header"><Link className="wordmark" href={portalPath(portal)}><span className="brand-mark">T</span>Tutorium</Link><span>Secure your account</span></header>
             <section className="auth-card">
                 <div className="auth-icon">✦</div><span className="eyebrow">ONE QUICK STEP</span>
                 <h1>Choose a new password</h1>

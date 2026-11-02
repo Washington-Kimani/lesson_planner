@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import type { PortalRole } from "@/lib/portal";
-import { portalHref, publicHref } from "@/lib/portal";
+import { portalHref, portalPath, publicHref } from "@/lib/portal";
 
 const details = {
     teachers: {
@@ -86,7 +86,7 @@ export function PortalSignIn({ portal, status }: { portal: PortalRole; status?: 
                 setError(result.error === "account_inactive" ? errorMessages.invalid_credentials : errorMessages[result.error ?? ""] ?? errorMessages.connection);
                 return;
             }
-            router.replace(result.must_change_password ? "/change-password" : "/");
+            router.replace(portalPath(portal, result.must_change_password ? "/change-password" : ""));
             router.refresh();
         } catch {
             setError(errorMessages.connection);

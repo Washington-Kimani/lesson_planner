@@ -1,3 +1,5 @@
+import { portalPath, portalRoleFromPath } from "@/lib/portal";
+
 export class ApiError extends Error {
     constructor(message: string, public status: number) {
         super(message);
@@ -36,9 +38,9 @@ export async function api<T = unknown>(
         throw new ApiError(CONNECTION, 0);
     }
     if (response.status === 401) {
-        // A full page load is intended here: it clears client state and lets the portal proxy decide where to send them
-        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-        window.location.href = "/login?status=session";
+        const portal = portalRoleFromPath(window.location.pathname);
+        if (!portal) throw new Error("Portal routing context is missing.");
+        window.location.href = portalPath(portal, "/login?status=session");
         throw new ApiError("Your session ended. Sign in again to continue.", 401);
     }
     const text = await response.text();
