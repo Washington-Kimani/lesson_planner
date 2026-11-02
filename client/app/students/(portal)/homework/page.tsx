@@ -2,7 +2,7 @@ import { apiGet } from "@/lib/api";
 import { formatLongDate, subjectColor, todayISO } from "@/lib/dates";
 import type { Lesson } from "@/lib/types";
 
-export const metadata = { title: "Homework · Tutorium" };
+export const metadata = { title: "Homework · Bellpath" };
 
 export default async function Homework() {
     const today = todayISO();

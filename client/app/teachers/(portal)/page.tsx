@@ -1,7 +1,7 @@
 import { CalendarView } from "@/app/components/CalendarView";
 
 export const metadata = {
-    title: "Teacher calendar · Tutorium",
+    title: "Teacher calendar · Bellpath",
     description: "Plan and manage your lessons.",
 };
 

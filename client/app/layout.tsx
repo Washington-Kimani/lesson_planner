@@ -6,10 +6,10 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
-  title: "Tutorium",
-  description: "Tutorium helps schools plan lessons, manage classes and keep students on track.",
+  title: "Bellpath",
+  description: "Bellpath helps schools plan lessons, manage classes and keep students on track.",
   icons: {
-    icon: "/favicon.png"
+    icon: "/bellpath.svg"
   }
 };
 

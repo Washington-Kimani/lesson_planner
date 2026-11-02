@@ -2,7 +2,7 @@ import { apiGet } from "@/lib/api";
 import { subjectColor } from "@/lib/dates";
 import type { ClassSubject } from "@/lib/types";
 
-export const metadata = { title: "My classes · Tutorium" };
+export const metadata = { title: "My classes · Bellpath" };
 
 export default async function StudentClasses() {
     const items = await apiGet<ClassSubject[]>("/class-subjects");

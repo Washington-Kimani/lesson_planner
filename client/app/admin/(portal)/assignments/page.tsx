@@ -2,7 +2,7 @@ import { AssignmentsManager } from "@/app/components/AssignmentsManager";
 import { apiGet } from "@/lib/api";
 import type { ClassRoom, ClassSubject, Subject, Teacher } from "@/lib/types";
 
-export const metadata = { title: "Teaching assignments · Tutorium" };
+export const metadata = { title: "Teaching assignments · Bellpath" };
 
 export default async function Assignments() {
     const [assignments, classes, subjects, teachers] = await Promise.all([

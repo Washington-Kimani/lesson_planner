@@ -76,7 +76,7 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
     return (
         <div className="mx-auto flex max-w-3xl flex-col gap-5">
             <div className="page-head">
-                <div><span className="eyebrow">YOUR ACCOUNT</span><h2>My profile</h2><p>Update how you appear in Tutorium and keep your account secure.</p></div>
+                <div><span className="eyebrow">YOUR ACCOUNT</span><h2>My profile</h2><p>Update how you appear in Bellpath and keep your account secure.</p></div>
             </div>
 
             <section className="glass panel">

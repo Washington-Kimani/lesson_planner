@@ -1,6 +1,6 @@
 import { CalendarView } from "@/app/components/CalendarView";
 
-export const metadata = { title: "School calendar · Tutorium" };
+export const metadata = { title: "School calendar · Bellpath" };
 
 export default async function AdminCalendar({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
     const { month } = await searchParams;

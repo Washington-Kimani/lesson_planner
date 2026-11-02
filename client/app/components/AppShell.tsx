@@ -89,7 +89,7 @@ export function AppShell({
     return (
         <div className="min-h-screen lg:flex">
             <aside className="app-sidebar" aria-label={`${ROLE_LABEL[portal]} navigation`}>
-                <Link className="wordmark" href={base}><span className="brand-mark">T</span>Tutorium</Link>
+                <Link className="wordmark" href={base}><span className="brand-mark">B</span>Bellpath</Link>
                 <span className="portal-role">{ROLE_LABEL[portal]} portal</span>
                 {links("side-link")}
                 <div className="side-spacer" />
@@ -105,10 +105,10 @@ export function AppShell({
 
             <div className="min-w-0 flex-1">
                 <header className="app-topbar">
-                    <span className="lg:hidden"><Link className="wordmark" href={base}><span className="brand-mark">T</span></Link></span>
+                    <span className="lg:hidden"><Link className="wordmark" href={base}><span className="brand-mark">B</span></Link></span>
                     <div className="min-w-0 flex-1">
                         <h1 className="truncate text-lg font-semibold tracking-tight lg:text-xl">Welcome back, {firstName}</h1>
-                        <p className="hidden text-xs text-muted sm:block">{ROLE_LABEL[portal]} · Tutorium</p>
+                        <p className="hidden text-xs text-muted sm:block">{ROLE_LABEL[portal]} · Bellpath</p>
                     </div>
                     <form action={portalUrl("/lessons")} role="search" className="search-box">
                         <Search className="size-4 text-muted" />

@@ -9,7 +9,7 @@ import { portalPath } from "@/lib/portal";
 import type { AccountRequest, AdminStats } from "@/lib/types";
 
 export const metadata = {
-    title: "Administrator overview · Tutorium",
+    title: "Administrator overview · Bellpath",
     description: "Manage school classes, subjects and teaching assignments.",
 };
 

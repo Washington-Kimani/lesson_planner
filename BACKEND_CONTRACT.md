@@ -1,4 +1,4 @@
-# Tutorium: API the client expects
+# Bellpath: API the client expects
 
 The Next.js client talks to FastAPI through `/api/proxy/*` (adds the Bearer token, refreshes it on 401).
 Everything is JSON unless noted. Roles are enforced **server-side**; the client only hides what a role can't use.

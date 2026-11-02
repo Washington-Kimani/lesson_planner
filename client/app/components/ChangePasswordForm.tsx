@@ -51,7 +51,7 @@ export function ChangePasswordForm({ portal }: { portal: PortalRole }) {
 
     return (
         <main className="auth-page">
-            <header className="auth-header"><Link className="wordmark" href={portalPath(portal)}><span className="brand-mark">T</span>Tutorium</Link><span>Secure your account</span></header>
+            <header className="auth-header"><Link className="wordmark" href={portalPath(portal)}><span className="brand-mark">B</span>Bellpath</Link><span>Secure your account</span></header>
             <section className="auth-card">
                 <div className="auth-icon">✦</div><span className="eyebrow">ONE QUICK STEP</span>
                 <h1>Choose a new password</h1>

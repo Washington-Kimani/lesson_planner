@@ -2,7 +2,7 @@ import { SubjectsManager } from "@/app/components/SubjectsManager";
 import { apiGet } from "@/lib/api";
 import type { Subject } from "@/lib/types";
 
-export const metadata = { title: "Subjects · Tutorium" };
+export const metadata = { title: "Subjects · Bellpath" };
 
 export default async function Subjects() {
     const subjects = await apiGet<Subject[]>("/subjects");

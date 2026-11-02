@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { InfoPage } from "@/app/components/InfoPage";
 
 export const metadata: Metadata = {
-    title: "Help · Tutorium",
+    title: "Help · Bellpath",
     description: "Answers about login IDs, passwords and your account.",
 };
 
