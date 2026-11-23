@@ -6,14 +6,14 @@
    indigo-violet #6868fd, lavender tint #f1f0fe, lavender border #a0a5f7,
    white surfaces, #ebebeb hairlines, near-black ink, amber #e29b04 accent. */
 :root {
-  --bg: #d8612d;
+  --bg: #ed6e13;
   --panel: #ffffff;
   --cell: #ffffff;
   --cell-alt: #f8f8fc;
   --line: #ebebeb;
   --fg: #1b1d21;
   --body: #424242;
-  --muted: #3e3b3b;
+  --muted: #252424;
   --accent: #1de9aa;
   --accent-strong: #11d295;
   --accent-text: #211e42;
@@ -196,7 +196,7 @@ textarea {
 }
 .button-primary {
   background: var(--accent);
-  color: white;
+  color: var(--accent-text);
   box-shadow: 0 8px 20px rgb(104 104 253 / 0.28);
 }
 .button-primary:hover {
