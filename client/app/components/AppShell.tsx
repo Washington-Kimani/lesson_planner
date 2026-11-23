@@ -87,7 +87,7 @@ export function AppShell({
     });
 
     return (
-        <div className="min-h-screen lg:flex">
+        <div className="app-shell min-h-screen lg:flex">
             <aside className="app-sidebar" aria-label={`${ROLE_LABEL[portal]} navigation`}>
                 <Link className="wordmark" href={base}><span className="brand-mark">B</span>Bellpath</Link>
                 <span className="portal-role">{ROLE_LABEL[portal]} portal</span>
@@ -103,7 +103,7 @@ export function AppShell({
                 </Link>
             </aside>
 
-            <div className="min-w-0 flex-1">
+            <div className="app-content min-w-0 flex-1">
                 <header className="app-topbar">
                     <span className="lg:hidden"><Link className="wordmark" href={base}><span className="brand-mark">B</span></Link></span>
                     <div className="min-w-0 flex-1">
